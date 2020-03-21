@@ -20,7 +20,22 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
   if (err) throw err;
   // run the start function after the connection is made to prompt the user
-  console.log("connected as id " + connection.threadId);
-  connection.end();
-//   start();
+  start();
 });
+
+function start(){
+    inquirer
+        .prompt({
+            name: "action_start",
+            type: "list",
+            message: "What action would you like to take?",
+            choices: ["View All Employees",
+        "View All Employees by Department",
+        "View All Employees by Manager BONUS",
+        "Add Employee",
+        "Remove Employee BONUS",
+        "Update Employee Role",
+        "Update Employee Manager BONUS"
+        ]
+        })
+}
