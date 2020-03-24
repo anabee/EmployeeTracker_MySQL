@@ -23,6 +23,7 @@ connection.connect(function(err) {
   start();
 });
 
+
 function start(){
     inquirer
         .prompt({
@@ -205,17 +206,24 @@ function addEes(){
 }
 
 function viewAllEes(){
-    connection.query("SELECT * FROM enployee_table", function (err, result, fields) {
+    connection.query("SELECT * FROM employee_table", function (err, result, fields) {
     if (err) throw err;
     console.table(result);
     });
 }
 
 function viewEesByDept(){
-    // connection.query("SELECT * FROM enployee_table", function (err, result, fields) {
-    // if (err) throw err;
-    // console.table(result);
-    // });
+    inquirer
+        .prompt({
+            name:"department_Choice",
+            type: "input",
+            message:"Select the department whose employees you would like to view."
+        })
+        .then(function(answer){
+            var query = connection.query(
+                "SELECT "
+            )
+        })
 }
 
 function viewEesbyManager(){
@@ -227,9 +235,34 @@ function removeEes(){
 }
 
 function updateEeRole(){
-
+    // should show roles before this
+    inquirer
+        .prompt([{
+            name:"role_Update",
+            type: "input",
+            message:"What ROLE would you like to update?",
+        },
+        {
+        name:"roleAttribute_Update",
+        type: "list",
+        message:"What attribute would you like to update?",
+        choices: ["Role Title","Role Salary"]
+        },
+        {
+        name:"newRole_Title",
+        type: "input",
+        message:"What is the new role title?",
+        when: (answers)=> answers.roleAttribute_Update === "Role Title",
+        },
+        {
+        name:"newRole_Salary",
+        type: "input",
+        message:"What is the new role salary?",
+        when: (answers)=> answers.roleAttribute_Update === "Role Salary",
+        }])
 }
 
 function updateEeManager(){
-    
+
 }
+
