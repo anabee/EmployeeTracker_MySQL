@@ -45,6 +45,67 @@ function start(){
         })
 }
 
+function addDepartment(){
+    inquirer
+        .prompt({
+            name:"dept_name",
+            type: "input",
+            message:"What is the DEPARTMENT name?"
+        })
+        .then(function(answer){
+            var deptName = answer.dept_name;
+            console.log("Adding a new department...\n");
+            var query = connection.query(
+                "INSERT INTO department_table SET ?",
+                {
+                    name: deptName,
+                },
+                function(err, res){
+                    if (err) throw err;
+                    console.log(res.affectedRows + " department(s) added!\n")
+                }
+            )
+            console.log(query.sql);
+        });
+}
+
+
+function addRole(){
+    inquirer
+        .prompt({
+            name:"role_title",
+            type: "input",
+            message:"What is the title of the ROLE you would like to add?"
+        },
+        {
+            name:"role_salary",
+            type: "input",
+            message: "What salary amount is designated to this role?"
+        },
+        {
+            name:"department_id",
+            type: "input",
+            message: "What department ID would you like to designate to this role?"
+        })
+        .then(function(answer){
+            console.log("Adding a new role...\n");
+            var query = connection.query(
+                "INSERT INTO role_table SET ?",
+                {
+                    title: answer.role_title,
+                    salary: answer.role_salary,
+                    department_id: answer.department_id,
+                },
+                function(err, res){
+                    if (err) throw err;
+                    console.log(res.affectedRows + " role(s) added!\n")
+                }
+            )
+            console.log(query.sql);
+        });
+}
+
+
 
 function startpartTwo(){
     inquirer
