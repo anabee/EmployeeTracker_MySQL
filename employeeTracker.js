@@ -29,8 +29,7 @@ function start(){
         name: "start",
         type: "list",
         message: "Welcome, please add DEPARTMENTS and ROLES to begin. Once you have added your desired departments and roles, continue to the Employee Tab.",
-        choices: ["Add Department", "Add Role","Employees Tab","EXIT",
-        ]
+        choices: ["Add Department", "Add Role","Employees Tab","EXIT",]
         })
         .then(function(answer){
             if (answer.start === "Add Department"){
@@ -38,7 +37,7 @@ function start(){
             } else if (answer.start === "Add Role"){
                 addRole();
             } else if (answer.start === "Employees Tab"){
-                startpartTwo();
+                employeeTab();
             } else{
                 connection.end();
             }
@@ -66,13 +65,20 @@ function addDepartment(){
                 }
             )
             console.log(query.sql);
+        })
+        .then(function(){
+            start();
         });
 }
 
 
 function addRole(){
+    // connection.query("SELECT * FROM department_table", function (err, result, fields) {
+    //     if (err) throw err;
+    //     console.table(result);
+    //   });
     inquirer
-        .prompt({
+        .prompt([{
             name:"role_title",
             type: "input",
             message:"What is the title of the ROLE you would like to add?"
@@ -86,7 +92,7 @@ function addRole(){
             name:"department_id",
             type: "input",
             message: "What department ID would you like to designate to this role?"
-        })
+        }])
         .then(function(answer){
             console.log("Adding a new role...\n");
             var query = connection.query(
@@ -102,54 +108,128 @@ function addRole(){
                 }
             )
             console.log(query.sql);
+        })
+        .then(function(){
+            start();
         });
 }
 
 
 
-function startpartTwo(){
+function employeeTab(){
     inquirer
         .prompt({
-        name: "action_start",
+        name: "employeeTab_start",
         type: "list",
         message: "What action would you like to take?",
         choices: ["Add Employee",
-        "View All Employees",
-        "View All Employees by Department",
-        "View All Employees by Manager BONUS",
-        "Remove Employee BONUS",
-        "Update Employee Role",
-        "Update Employee Manager BONUS",
-        "EXIT",
-        ]
+                "View All Employees",
+                "View All Employees by Department",
+                "View All Employees by Manager BONUS",
+                "Remove Employee BONUS",
+                "Update Employee Role",
+                "Update Employee Manager BONUS",
+                "EXIT",]
         })
         .then(function(answer) {
-            // based on their answer, either call the bid or the post functions
-            if (answer.action_start === "View All Employees") {
+            if (answer.employeeTab_start === "Add Employee") {
                 // console.table - to look better for a list of ees 
-                viewAllEes();
-            }
-            else if(answer.action_start === "View All Employees by Department") {
-                viewEesByDept();
-            }
-            else if(answer.action_start === "View All Employees by Manager BONUS") {
-                viewEesbyManager();
-            }
-            else if(answer.action_start === "Add Employee") {
-                // make sure to inquire about role and dept too
                 addEes();
             }
-            else if(answer.action_start === "Remove Employee BONUS") {
+            else if(answer.employeeTab_start === "View All Employees") {
+                viewAllEes();
+            }
+            else if(answer.employeeTab_start === "View All Employees by Department") {
+                viewEesByDept();
+            }
+            else if(answer.employeeTab_start === "View All Employees by Manager BONUS") {
+                viewEesbyManager();
+            }
+            else if(answer.employeeTab_start === "Remove Employee BONUS") {
                 removeEes();
             }
-            else if(answer.action_start === "Update Employee Role") {
+            else if(answer.employeeTab_start === "Update Employee Role") {
                 updateEeRole();
             }
-            else if(answer.action_start === "Update Employee Manager BONUS") {
+            else if(answer.employeeTab_start === "Update Employee Manager BONUS") {
                 updateEeManager();
             }
              else{
               connection.end();
             }
           });
+}
+
+function addEes(){
+    inquirer
+        .prompt([{
+            name:"first_name",
+            type: "input",
+            message:"First Name:"
+        },
+        {
+            name:"last_name",
+            type: "input",
+            message: "Last Name:"
+        },
+        {
+            name:"role_id",
+            type: "input",
+            message: "Role Id:"
+        },
+        {
+            name:"manager_id",
+            type: "input",
+            message: "Manager Id:"
+        }])
+        .then(function(answer){
+            console.log("Adding a new role...\n");
+            var query = connection.query(
+                "INSERT INTO employee_table SET ?",
+                {
+                    first_name: answer.first_name,
+                    last_name: answer.last_name,
+                    role_id: answer.role_id,
+                    manager_id: answer.manager_id,
+                },
+                function(err, res){
+                    if (err) throw err;
+                    console.log(res.affectedRows + " employee(s) added!\n")
+                }
+            )
+            console.log(query.sql);
+        })
+        .then(function(){
+            employeeTab();
+        });
+}
+
+function viewAllEes(){
+    connection.query("SELECT * FROM enployee_table", function (err, result, fields) {
+    if (err) throw err;
+    console.table(result);
+    });
+}
+
+function viewEesByDept(){
+    // connection.query("SELECT * FROM enployee_table", function (err, result, fields) {
+    // if (err) throw err;
+    // console.table(result);
+    // });
+}
+
+function viewEesbyManager(){
+    console.log("BONUS")
+}
+
+function removeEes(){
+    console.log("BONUS")
+}
+
+function updateEeRole(){
+
+}
+
+function updateEeManager(){
+    
 }
