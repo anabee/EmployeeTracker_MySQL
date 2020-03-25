@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+const Font = require('ascii-art-font');
 
 // create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -21,8 +22,15 @@ connection.connect(function(err) {
   if (err) throw err;
   // run the start function after the connection is made to prompt the user
   start();
+//   welcomePage();
 });
 
+// function welcomePage () {
+//     Font.fontPath = 'Fonts';
+//     Font.create('welcomeMsg','bold', function(rendered){
+
+//     });
+// };
 
 function start(){
     inquirer
@@ -209,10 +217,15 @@ function viewAllEes(){
     connection.query("SELECT * FROM employee_table", function (err, result, fields) {
     if (err) throw err;
     console.table(result);
+    })
+    // !!!!!!!!!!!! Not reading .query above as a function 
+    .then(function(){
+        employeeTab();
     });
 }
 
 function viewEesByDept(){
+    // !!!!Should show depts 
     inquirer
         .prompt({
             name:"department_Choice",
@@ -220,9 +233,15 @@ function viewEesByDept(){
             message:"Select the department whose employees you would like to view."
         })
         .then(function(answer){
-            var query = connection.query(
-                "SELECT "
-            )
+            var query =
+                `SELECT employee_table.first_name, employee_table.last_name, employee_table.role_id, employee_table.manager_id FROM employee_table INNER JOIN role_table ON (employee_table.role_id = role_table.department_id)`
+            
+                connection.query(query,function(err, res){
+                    if (err) {
+                        throw err;
+                    } 
+                    console.log(res);
+                })
         })
 }
 
@@ -263,6 +282,11 @@ function updateEeRole(){
 }
 
 function updateEeManager(){
-
+    inquirer
+        .prompt([{
+            name:"manager_Update",
+            type: "input",
+            message:"What MANAGER would you like to update?",
+        }])
 }
 

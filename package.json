@@ -4,6 +4,8 @@
   "description": "activity for demonstrating inquirer with mysql",
   "main": "greatBayBasic.js",
   "dependencies": {
+    "ascii-art": "^2.5.0",
+    "ascii-art-table": "^1.0.1",
     "asciify-image": "^0.1.5",
     "inquirer": "^6.2.1",
     "mysql": "^2.16.0"
