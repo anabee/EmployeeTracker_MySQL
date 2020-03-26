@@ -162,10 +162,10 @@ function employeeTab(){
             else if(answer.employeeTab_start === "View All Employees by Department") {
                 viewEesByDept();
             }
-            else if(answer.employeeTab_start === "View All Employees by Manager BONUS") {
+            else if(answer.employeeTab_start === "View All Employees by Manager") {
                 viewEesbyManager();
             }
-            else if(answer.employeeTab_start === "Remove Employee BONUS") {
+            else if(answer.employeeTab_start === "Remove Employee") {
                 removeEes();
             }
             else if(answer.employeeTab_start === "Update Employee Role") {
@@ -242,7 +242,7 @@ function viewEesByDept(){
         })
         .then(function(answer){
             var query =
-                `SELECT employee_table.first_name, employee_table.last_name, employee_table.role_id, employee_table.manager_id FROM employee_table RIGHT OUTER JOIN role_table ON (employee_table.role_id = ${answer.department_Choice})`
+                `SELECT employee_table.first_name, employee_table.last_name, employee_table.role_id, employee_table.manager_id FROM employee_table INNER JOIN role_table ON (employee_table.role_id = ${answer.department_Choice})`
                 connection.query(query,function(err, res){
                     if (err) {
                         throw err;
@@ -254,11 +254,45 @@ function viewEesByDept(){
 }
 
 function viewEesbyManager(){
-    console.log("BONUS")
+    // console.log("BONUS");
+    inquirer
+        .prompt({
+            name:"manager_Choice",
+            type: "input",
+            message:"What is the Manager ID for the manager whose employees you would like to view?"
+        })
+        .then(function(answer){
+            var query =
+                `SELECT employee_table.first_name, employee_table.last_name, employee_table.role_id FROM employee_table WHERE manager_id = ${answer.manager_Choice}`
+                connection.query(query,function(err, res){
+                    if (err) {
+                        throw err;
+                    } 
+                    console.table(res);
+                    employeeTab();
+                })
+        })
 }
 
 function removeEes(){
-    console.log("BONUS")
+    // console.log("BONUS");
+    inquirer
+        .prompt({
+            name:"deleted_employee",
+            type: "input",
+            message:"What is the ID of the employee you would like to remove?"
+        })
+        .then(function(answer){
+            var query =
+                `DELETE FROM employee_table WHERE id = ${answer.deleted_employee}`
+                connection.query(query,function(err, res){
+                    if (err) {
+                        throw err;
+                    } 
+                    console.log(res.affectedRows + " employee was deleted.\n")
+                    employeeTab();
+                })
+        })
 }
 
 function updateEeRole(){
