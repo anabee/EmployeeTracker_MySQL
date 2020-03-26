@@ -1,6 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-const Font = require('ascii-art-font');
+const logo = require("asciiart-logo");
 
 // create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -20,17 +20,30 @@ var connection = mysql.createConnection({
 // connect to the mysql server and sql database
 connection.connect(function(err) {
   if (err) throw err;
-  // run the start function after the connection is made to prompt the user
-  start();
-//   welcomePage();
+  
+const logoText = logo({ name: "Employee Tracker" }).render();
+console.log(logoText);
+
+showDept();
+showRoles();
+setTimeout(start,1000);
+
 });
 
-// function welcomePage () {
-//     Font.fontPath = 'Fonts';
-//     Font.create('welcomeMsg','bold', function(rendered){
 
-//     });
-// };
+function showDept(){
+    connection.query("SELECT * FROM department_table", function (err, result, fields) {
+        if (err) throw err;
+        console.table(result);
+        });
+}
+
+function showRoles(){
+    connection.query("SELECT * FROM role_table", function (err, result, fields) {
+        if (err) throw err;
+        console.table(result);
+        })
+}
 
 function start(){
     inquirer
@@ -46,7 +59,9 @@ function start(){
             } else if (answer.start === "Add Role"){
                 addRole();
             } else if (answer.start === "Employees Tab"){
-                employeeTab();
+                showDept();
+                showRoles();
+                setTimeout(employeeTab,1000);
             } else{
                 connection.end();
             }
@@ -82,10 +97,6 @@ function addDepartment(){
 
 
 function addRole(){
-    // connection.query("SELECT * FROM department_table", function (err, result, fields) {
-    //     if (err) throw err;
-    //     console.table(result);
-    //   });
     inquirer
         .prompt([{
             name:"role_title",
@@ -217,11 +228,8 @@ function viewAllEes(){
     connection.query("SELECT * FROM employee_table", function (err, result, fields) {
     if (err) throw err;
     console.table(result);
+    employeeTab();
     })
-    // !!!!!!!!!!!! Not reading .query above as a function 
-    .then(function(){
-        employeeTab();
-    });
 }
 
 function viewEesByDept(){
@@ -234,13 +242,13 @@ function viewEesByDept(){
         })
         .then(function(answer){
             var query =
-                `SELECT employee_table.first_name, employee_table.last_name, employee_table.role_id, employee_table.manager_id FROM employee_table INNER JOIN role_table ON (employee_table.role_id = role_table.department_id)`
-            
+                `SELECT employee_table.first_name, employee_table.last_name, employee_table.role_id, employee_table.manager_id FROM employee_table RIGHT OUTER JOIN role_table ON (employee_table.role_id = ${answer.department_Choice})`
                 connection.query(query,function(err, res){
                     if (err) {
                         throw err;
                     } 
-                    console.log(res);
+                    console.table(res);
+                    employeeTab();
                 })
         })
 }
@@ -257,9 +265,9 @@ function updateEeRole(){
     // should show roles before this
     inquirer
         .prompt([{
-            name:"role_Update",
-            type: "input",
-            message:"What ROLE would you like to update?",
+        name:"role_Update",
+        type: "input",
+        message:"What ROLE would you like to update?",
         },
         {
         name:"roleAttribute_Update",
@@ -279,14 +287,55 @@ function updateEeRole(){
         message:"What is the new role salary?",
         when: (answers)=> answers.roleAttribute_Update === "Role Salary",
         }])
+        .then(function(answers){
+            console.log("Updating the role...\n");
+            if (answers.roleAttribute_Update === "Role Title"){
+                var query = connection.query(
+                    "UPDATE role_table SET ? WHERE ?",
+                    [
+                        {
+                            title: answers.newRole_Title
+                        },
+                        {
+                            id: answers.role_Update
+                        }
+                    ],
+                    function(err, res) {
+                        if (err) throw err;
+                        console.log(res.affectedRows + " role(s) updated!\n");
+                      }
+                )
+            } else if (answers.roleAttribute_Update === "Role Salary"){
+                var query = connection.query(
+                    "UPDATE role_table SET ? WHERE ?",
+                    [
+                        {
+                            salary: answers.newRole_Salary
+                        },
+                        {
+                            id: answers.role_Update
+                        }
+                    ],
+                    function(err, res) {
+                        if (err) throw err;
+                        console.log(res.affectedRows + " role(s) updated!\n");
+                      }
+                )
+                console.log(query.sql);
+            }
+        })
+        .then(function(){
+            employeeTab();
+        });
 }
 
 function updateEeManager(){
-    inquirer
-        .prompt([{
-            name:"manager_Update",
-            type: "input",
-            message:"What MANAGER would you like to update?",
-        }])
+    console.log("BONUS");
+    // inquirer
+    //     .prompt([{
+    //         name:"manager_Update",
+    //         type: "input",
+    //         message:"What MANAGER would you like to update?",
+    //     }])
 }
 
