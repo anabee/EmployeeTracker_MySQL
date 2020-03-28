@@ -242,7 +242,7 @@ function viewEesByDept(){
         })
         .then(function(answer){
             var query =
-                `SELECT employee_table.first_name, employee_table.last_name, employee_table.role_id, employee_table.manager_id FROM employee_table INNER JOIN role_table ON (employee_table.role_id = ${answer.department_Choice})`
+                `SELECT employee_table.first_name, employee_table.last_name, employee_table.role_id, employee_table.manager_id FROM employee_table INNER JOIN role_table ON (employee_table.role_id = role_table.id) WHERE (employee_table.role_id = ${answer.department_Choice})`
                 connection.query(query,function(err, res){
                     if (err) {
                         throw err;
