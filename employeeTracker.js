@@ -145,8 +145,8 @@ function employeeTab(){
         choices: ["Add Employee",
                 "View All Employees",
                 "View All Employees by Department",
-                "View All Employees by Manager BONUS",
-                "Remove Employee BONUS",
+                "View All Employees by Manager",
+                "Remove Employee",
                 "Update Employee Role",
                 "Update Employee Manager BONUS",
                 "EXIT",]
@@ -275,7 +275,6 @@ function viewEesbyManager(){
 }
 
 function removeEes(){
-    // console.log("BONUS");
     inquirer
         .prompt({
             name:"deleted_employee",
@@ -292,7 +291,7 @@ function removeEes(){
                     console.log(res.affectedRows + " employee was deleted.\n")
                     employeeTab();
                 })
-        })
+        });
 }
 
 function updateEeRole(){
